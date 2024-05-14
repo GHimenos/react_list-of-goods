@@ -47,6 +47,9 @@ export function getReorderedGoods(
 //   sortType: SortType,
 // };
 
+let servGoods: string[] = [...goodsFromServer];
+console.log(servGoods);
+
 export const App: React.FC = () => {
   return (
     <div className="section content">
@@ -69,14 +72,9 @@ export const App: React.FC = () => {
       </div>
 
       <ul>
-        <ul>
-          <li data-cy="Good">Dumplings</li>
-          <li data-cy="Good">Carrot</li>
-          <li data-cy="Good">Eggs</li>
-          <li data-cy="Good">Ice cream</li>
-          <li data-cy="Good">Apple</li>
-          <li data-cy="Good">...</li>
-        </ul>
+        {servGoods.map(function (good, index) {
+          return <li key={`${index - 5}`} data-cy="Good">{`${good}`}</li>;
+        })}
       </ul>
     </div>
   );
