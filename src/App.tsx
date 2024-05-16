@@ -22,12 +22,12 @@ enum SortType {
   LENGTH,
 }
 
+//! в чём смысл двух одинаковых типов?
+
 type ReorderOptions = {
   sortType: SortType;
   isReversed: boolean;
 };
-
-const sortParams:ReorderOptions{};
 
 // DON'T save goods to the state
 type State = {
@@ -49,17 +49,40 @@ export function getReorderedGoods(
 ) {
   // To avoid the original array mutation
   const visibleGoods = [...goods];
-
-  if(SortType.NONE){
-    return visibleGoods;
-  } else if (SortType.ALPHABET){
-
-  }
-
+  //* костыль для пробы
+  const options: any[] = [sortType, isReversed];
 
   // Sort and reverse goods if needed
   // eslint-disable-next-line no-console
-  console.log(sortType, isReversed);
+  switch (options) {
+    case [SortType.NONE, false]:
+      console.log(visibleGoods);
+      break;
+    case [SortType.ALPHABET, false]:
+      visibleGoods.sort((a, b) => a.localeCompare(b));
+      console.log(visibleGoods);
+      break;
+    case [SortType.LENGTH, false]:
+      visibleGoods.sort((a, b) => a.length - b.length);
+      console.log(visibleGoods);
+      break;
+    case [SortType.NONE, true]:
+      visibleGoods.reverse();
+      console.log(visibleGoods);
+      break;
+    case [SortType.ALPHABET, true]:
+      visibleGoods.sort((a, b) => a.localeCompare(b));
+      visibleGoods.reverse();
+      console.log(visibleGoods);
+      break;
+    case [SortType.LENGTH, true]:
+      visibleGoods.sort((a, b) => a.length - b.length);
+      visibleGoods.reverse();
+      console.log(visibleGoods);
+      break;
+  }
+
+  console.log(options);
 
   return visibleGoods;
 }
