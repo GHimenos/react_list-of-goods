@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import 'bulma/css/bulma.css';
 import './App.scss';
 
@@ -26,13 +27,35 @@ type ReorderOptions = {
   isReversed: boolean;
 };
 
+const sortParams:ReorderOptions{};
+
+// DON'T save goods to the state
+type State = {
+  isReversed: boolean;
+  sortType: SortType;
+};
+
+//! когда тип через ":", а когда через "<>"?
+const [render, setRender] = useState<State>({
+  isReversed: false,
+  sortType: SortType.NONE,
+});
+
 // Use this function in the render method to prepare goods
 export function getReorderedGoods(
   goods: string[],
+  //! почему передаётся {} а не const (let):ReorderOptions в которой объект - так можно использовать switch
   { sortType, isReversed }: ReorderOptions,
 ) {
   // To avoid the original array mutation
   const visibleGoods = [...goods];
+
+  if(SortType.NONE){
+    return visibleGoods;
+  } else if (SortType.ALPHABET){
+
+  }
+
 
   // Sort and reverse goods if needed
   // eslint-disable-next-line no-console
@@ -40,15 +63,6 @@ export function getReorderedGoods(
 
   return visibleGoods;
 }
-
-// DON'T save goods to the state
-// type State = {
-//   isReversed: boolean,
-//   sortType: SortType,
-// };
-
-let servGoods: string[] = [...goodsFromServer];
-console.log(servGoods);
 
 export const App: React.FC = () => {
   return (
@@ -72,8 +86,8 @@ export const App: React.FC = () => {
       </div>
 
       <ul>
-        {servGoods.map(function (good, index) {
-          return <li key={`${index - 5}`} data-cy="Good">{`${good}`}</li>;
+        {goodsFromServer.map((good: string) => {
+          return <li key={good} data-cy="Good">{`${good}`}</li>;
         })}
       </ul>
     </div>
