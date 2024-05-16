@@ -3,6 +3,8 @@ import { useState } from 'react';
 import 'bulma/css/bulma.css';
 import './App.scss';
 
+import cn from 'classnames';
+
 export const goodsFromServer: string[] = [
   'Dumplings',
   'Carrot',
@@ -31,15 +33,22 @@ type ReorderOptions = {
 
 // DON'T save goods to the state
 type State = {
-  isReversed: boolean;
   sortType: SortType;
+  isReversed: boolean;
 };
 
+//* стр-ра"Типы"{
+//* type ReorderOptions = {
+// sortType: SortType;
+// isReversed: boolean;
+// }
+//*      }
+
 //! когда тип через ":", а когда через "<>"?
-const [render, setRender] = useState<State>({
+/* const [render, setRender] = useState<State>({
   isReversed: false,
   sortType: SortType.NONE,
-});
+}); */
 
 // Use this function in the render method to prepare goods
 export function getReorderedGoods(
@@ -50,67 +59,95 @@ export function getReorderedGoods(
   // To avoid the original array mutation
   const visibleGoods = [...goods];
   //* костыль для пробы
-  const options: any[] = [sortType, isReversed];
-
   // Sort and reverse goods if needed
   // eslint-disable-next-line no-console
-  switch (options) {
-    case [SortType.NONE, false]:
-      console.log(visibleGoods);
+  switch (sortType) {
+    case SortType.NONE:
       break;
-    case [SortType.ALPHABET, false]:
+
+    case SortType.ALPHABET:
       visibleGoods.sort((a, b) => a.localeCompare(b));
-      console.log(visibleGoods);
       break;
-    case [SortType.LENGTH, false]:
+
+    case SortType.LENGTH:
       visibleGoods.sort((a, b) => a.length - b.length);
-      console.log(visibleGoods);
-      break;
-    case [SortType.NONE, true]:
-      visibleGoods.reverse();
-      console.log(visibleGoods);
-      break;
-    case [SortType.ALPHABET, true]:
-      visibleGoods.sort((a, b) => a.localeCompare(b));
-      visibleGoods.reverse();
-      console.log(visibleGoods);
-      break;
-    case [SortType.LENGTH, true]:
-      visibleGoods.sort((a, b) => a.length - b.length);
-      visibleGoods.reverse();
-      console.log(visibleGoods);
       break;
   }
 
-  console.log(options);
+  if (isReversed) {
+    visibleGoods.reverse();
+  }
 
   return visibleGoods;
 }
 
 export const App: React.FC = () => {
+  const [sortType, setSortType] = useState<SortType>(SortType.NONE);
+  const [isReversed, setIsReversed] = useState<boolean>(false);
+
+  const visibleGoods = getReorderedGoods(goodsFromServer, {
+    isReversed,
+    sortType,
+  });
+
+  const button = document.createElement('button');
+  button.addEventListener('click', () => {});
+
+  const name = 'alex';
+  const user = { name };
+
+  const handleClick = e => {
+    e.preventDefault();
+  };
+
   return (
     <div className="section content">
       <div className="buttons">
-        <button type="button" className="button is-info is-light">
+        <button
+          type="button"
+          className={cn('button', 'is-info', {
+            'is-light': sortType !== SortType.ALPHABET,
+          })}
+          onClick={handleClick}
+        >
           Sort alphabetically
         </button>
 
-        <button type="button" className="button is-success is-light">
+        <button
+          type="button"
+          className="button is-success is-light"
+          onClick={() => setSortType(SortType.LENGTH)}
+        >
           Sort by length
         </button>
 
-        <button type="button" className="button is-warning is-light">
+        <button
+          type="button"
+          className="button is-warning is-light"
+          onClick={() => setIsReversed(prev => !prev)}
+        >
           Reverse
         </button>
 
-        <button type="button" className="button is-danger is-light">
+        <button
+          type="button"
+          className="button is-danger is-light"
+          onClick={() => {
+            setIsReversed(false);
+            setSortType(SortType.NONE);
+          }}
+        >
           Reset
         </button>
       </div>
 
       <ul>
-        {goodsFromServer.map((good: string) => {
-          return <li key={good} data-cy="Good">{`${good}`}</li>;
+        {visibleGoods.map((good: string) => {
+          return (
+            <li key={good} data-cy="Good">
+              {good}
+            </li>
+          );
         })}
       </ul>
     </div>
