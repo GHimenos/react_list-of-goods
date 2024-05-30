@@ -81,10 +81,9 @@ export const App: React.FC = () => {
     sortType: SortType.NONE,
   });
 
-  const displayGoods: string = getReorderedGoods(
-    goodsFromServer,
-    ({ sortType, isReversed } = order),
-  );
+  const displayGoods: string[] = getReorderedGoods(goodsFromServer, order);
+  console.log(displayGoods);
+
   return (
     <div className="section content">
       <div className="buttons">
@@ -96,7 +95,13 @@ export const App: React.FC = () => {
           Sort by length
         </button>
 
-        <button type="button" className="button is-warning is-light">
+        <button
+          type="button"
+          onClick={() =>
+            setOrder(prev => ({ ...prev, isReversed: !prev.isReversed }))
+          }
+          className="button is-warning is-light"
+        >
           Reverse
         </button>
 
@@ -106,7 +111,7 @@ export const App: React.FC = () => {
       </div>
 
       <ul>
-        {goodsFromServer.map((good: string) => {
+        {displayGoods.map((good: string) => {
           return <li key={good} data-cy="Good">{`${good}`}</li>;
         })}
       </ul>
