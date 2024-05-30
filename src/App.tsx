@@ -25,26 +25,20 @@ enum SortType {
 type ReorderOptions = {
   sortType: SortType;
   isReversed: boolean;
+  reset: boolean;
 };
 
 // DON'T save goods to the state
 type State = {
   isReversed: boolean;
   sortType: SortType;
+  reset: boolean;
 };
-
-//! когда тип через ":", а когда через "<>"?
-/*
- * - возможно:
- * useState уже имеет свой тип и ему его не надо присваивать вообще;
- * useState имеет свой тип и может принимать любые другие типы, как аргумент
- *  => мы передаём Generic для конкретизации типа State
- */
 
 // Use this function in the render method to prepare goods
 export function getReorderedGoods(
   goods: string[],
-  { sortType, isReversed }: ReorderOptions,
+  { sortType, isReversed, reset }: ReorderOptions,
 ) {
   // To avoid the original array mutation
   const visibleGoods = [...goods];
@@ -66,6 +60,7 @@ export function getReorderedGoods(
   }
 
   isReversed && reverser(visibleGoods);
+  reset && reseter();
 
   return visibleGoods;
 }
@@ -75,10 +70,15 @@ export function reverser(goods: string[]) {
   return goods;
 }
 
+export function reseter() {
+  console.log('reset done!!!');
+}
+
 export const App: React.FC = () => {
   const [order, setOrder] = useState<State>({
     isReversed: false,
     sortType: SortType.NONE,
+    reset: false,
   });
 
   const displayGoods: string[] = getReorderedGoods(goodsFromServer, order);
@@ -105,7 +105,12 @@ export const App: React.FC = () => {
           Reverse
         </button>
 
-        <button type="button" className="button is-danger is-light">
+        <button
+          onClick={() => setOrder(prev => ({ ...prev, reset: true }))}
+          type="button"
+          className="button is-danger is-light"
+          hidden
+        >
           Reset
         </button>
       </div>
