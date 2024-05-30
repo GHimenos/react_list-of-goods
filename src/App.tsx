@@ -22,8 +22,6 @@ enum SortType {
   LENGTH,
 }
 
-//! в чём смысл двух одинаковых типов?
-
 type ReorderOptions = {
   sortType: SortType;
   isReversed: boolean;
@@ -36,58 +34,57 @@ type State = {
 };
 
 //! когда тип через ":", а когда через "<>"?
-const [render, setRender] = useState<State>({
-  isReversed: false,
-  sortType: SortType.NONE,
-});
+/*
+ * - возможно:
+ * useState уже имеет свой тип и ему его не надо присваивать вообще;
+ * useState имеет свой тип и может принимать любые другие типы, как аргумент
+ *  => мы передаём Generic для конкретизации типа State
+ */
 
 // Use this function in the render method to prepare goods
 export function getReorderedGoods(
   goods: string[],
-  //! почему передаётся {} а не const (let):ReorderOptions в которой объект - так можно использовать switch
   { sortType, isReversed }: ReorderOptions,
 ) {
   // To avoid the original array mutation
   const visibleGoods = [...goods];
-  //* костыль для пробы
-  const options: any[] = [sortType, isReversed];
 
   // Sort and reverse goods if needed
   // eslint-disable-next-line no-console
-  switch (options) {
-    case [SortType.NONE, false]:
+  switch (sortType) {
+    case SortType.NONE:
       console.log(visibleGoods);
       break;
-    case [SortType.ALPHABET, false]:
+    case SortType.ALPHABET:
       visibleGoods.sort((a, b) => a.localeCompare(b));
       console.log(visibleGoods);
       break;
-    case [SortType.LENGTH, false]:
+    case SortType.LENGTH:
       visibleGoods.sort((a, b) => a.length - b.length);
-      console.log(visibleGoods);
-      break;
-    case [SortType.NONE, true]:
-      visibleGoods.reverse();
-      console.log(visibleGoods);
-      break;
-    case [SortType.ALPHABET, true]:
-      visibleGoods.sort((a, b) => a.localeCompare(b));
-      visibleGoods.reverse();
-      console.log(visibleGoods);
-      break;
-    case [SortType.LENGTH, true]:
-      visibleGoods.sort((a, b) => a.length - b.length);
-      visibleGoods.reverse();
       console.log(visibleGoods);
       break;
   }
 
-  console.log(options);
+  isReversed && reverser(visibleGoods);
 
   return visibleGoods;
 }
 
+export function reverser(goods: string[]) {
+  goods.reverse();
+  return goods;
+}
+
 export const App: React.FC = () => {
+  const [order, setOrder] = useState<State>({
+    isReversed: false,
+    sortType: SortType.NONE,
+  });
+
+  const displayGoods: string = getReorderedGoods(
+    goodsFromServer,
+    ({ sortType, isReversed } = order),
+  );
   return (
     <div className="section content">
       <div className="buttons">
