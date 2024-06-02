@@ -25,7 +25,6 @@ enum SortType {
 type ReorderOptions = {
   sortType: SortType;
   isReversed: boolean;
-  reset: boolean;
 };
 
 // DON'T save goods to the state
@@ -38,7 +37,7 @@ type State = {
 // Use this function in the render method to prepare goods
 export function getReorderedGoods(
   goods: string[],
-  { sortType, isReversed, reset }: ReorderOptions,
+  { sortType, isReversed }: ReorderOptions,
 ) {
   // To avoid the original array mutation
   const visibleGoods = [...goods];
@@ -47,20 +46,16 @@ export function getReorderedGoods(
   // eslint-disable-next-line no-console
   switch (sortType) {
     case SortType.NONE:
-      console.log(visibleGoods);
       break;
     case SortType.ALPHABET:
       visibleGoods.sort((a, b) => a.localeCompare(b));
-      console.log(visibleGoods);
       break;
     case SortType.LENGTH:
       visibleGoods.sort((a, b) => a.length - b.length);
-      console.log(visibleGoods);
       break;
   }
 
   isReversed && reverser(visibleGoods);
-  reset && reseter();
 
   return visibleGoods;
 }
@@ -68,10 +63,6 @@ export function getReorderedGoods(
 export function reverser(goods: string[]) {
   goods.reverse();
   return goods;
-}
-
-export function reseter() {
-  console.log('reset done!!!');
 }
 
 export const App: React.FC = () => {
@@ -87,32 +78,67 @@ export const App: React.FC = () => {
   return (
     <div className="section content">
       <div className="buttons">
-        <button type="button" className="button is-info is-light">
+        <button
+          onClick={() =>
+            setOrder(prev => ({
+              ...prev,
+              sortType: SortType.ALPHABET,
+              isReversed: false,
+              reset: true,
+            }))
+          }
+          type="button"
+          className="button is-info is-light"
+        >
           Sort alphabetically
         </button>
 
-        <button type="button" className="button is-success is-light">
+        <button
+          onClick={() =>
+            setOrder(prev => ({
+              ...prev,
+              sortType: SortType.LENGTH,
+              isReversed: false,
+              reset: true,
+            }))
+          }
+          type="button"
+          className="button is-success is-light"
+        >
           Sort by length
         </button>
 
         <button
           type="button"
           onClick={() =>
-            setOrder(prev => ({ ...prev, isReversed: !prev.isReversed }))
+            setOrder(prev => ({
+              ...prev,
+              isReversed: !prev.isReversed,
+              reset: true,
+            }))
           }
           className="button is-warning is-light"
         >
           Reverse
         </button>
 
-        <button
-          onClick={() => setOrder(prev => ({ ...prev, reset: true }))}
-          type="button"
-          className="button is-danger is-light"
-          hidden
-        >
-          Reset
-        </button>
+        {order.reset && (
+          <button
+            onClick={() => {
+              setOrder(prev => ({
+                ...prev,
+                sortType: SortType.NONE,
+                isReversed: false,
+                reset: false,
+              }));
+            }}
+            type="button"
+            className="button is-danger is-light"
+            hidden
+          >
+            Reset
+          </button>
+        )}
       </div>
 
       <ul>
