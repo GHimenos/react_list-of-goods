@@ -74,7 +74,7 @@ export const App: React.FC = () => {
   });
 
   const displayGoods: string[] = getReorderedGoods(goodsFromServer, order);
-
+  //**new comment for commit */
   return (
     <div className="section content">
       <div className="buttons">
