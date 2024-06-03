@@ -67,10 +67,13 @@ export function reverser(goods: string[]) {
 }
 
 export const App: React.FC = () => {
-  const [order, setOrder] = useState<State>({
+  const initialOrder: State = {
     isReversed: false,
     sortType: SortType.NONE,
     reset: false,
+  };
+  const [order, setOrder] = useState<State>({
+    ...initialOrder,
   });
 
   const displayGoods: string[] = getReorderedGoods(goodsFromServer, order);
@@ -118,7 +121,10 @@ export const App: React.FC = () => {
             setOrder(prev => ({
               ...prev,
               isReversed: !prev.isReversed,
-              reset: true,
+              reset:
+                prev.isReversed && prev.sortType === SortType.NONE
+                  ? false
+                  : true,
             }))
           }
           className={classNames('button is-warning', {
