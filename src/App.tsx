@@ -72,25 +72,49 @@ export const App: React.FC = () => {
     sortType: SortType.NONE,
     reset: false,
   };
+
   const [order, setOrder] = useState<State>({
     ...initialOrder,
   });
 
   const displayGoods: string[] = getReorderedGoods(goodsFromServer, order);
-  //**new comment for commit */
+
+  const handleAlpha = () =>
+    setOrder(prev => ({
+      ...prev,
+      sortType: SortType.ALPHABET,
+      reset: true,
+    }));
+
+  const handleLength = () =>
+    setOrder(prev => ({
+      ...prev,
+      sortType: SortType.LENGTH,
+      reset: true,
+    }));
+
+  const handleReverse = () => {
+    setOrder(prev => ({
+      ...prev,
+      isReversed: !prev.isReversed,
+      reset: prev.isReversed && prev.sortType === SortType.NONE ? false : true,
+    }));
+  };
+
+  const handleReset = () => {
+    setOrder(prev => ({
+      ...prev,
+      sortType: SortType.NONE,
+      isReversed: false,
+      reset: false,
+    }));
+  };
+
   return (
     <div className="section content">
       <div className="buttons">
         <button
-          onClick={() => {
-            console.log(this);
-
-            setOrder(prev => ({
-              ...prev,
-              sortType: SortType.ALPHABET,
-              reset: true,
-            }));
-          }}
+          onClick={handleAlpha}
           type="button"
           className={classNames('button is-info', {
             'is-light': order.sortType !== SortType.ALPHABET,
@@ -100,13 +124,7 @@ export const App: React.FC = () => {
         </button>
 
         <button
-          onClick={() =>
-            setOrder(prev => ({
-              ...prev,
-              sortType: SortType.LENGTH,
-              reset: true,
-            }))
-          }
+          onClick={handleLength}
           type="button"
           className={classNames('button is-success', {
             'is-light': order.sortType !== SortType.LENGTH,
@@ -117,16 +135,7 @@ export const App: React.FC = () => {
 
         <button
           type="button"
-          onClick={() =>
-            setOrder(prev => ({
-              ...prev,
-              isReversed: !prev.isReversed,
-              reset:
-                prev.isReversed && prev.sortType === SortType.NONE
-                  ? false
-                  : true,
-            }))
-          }
+          onClick={handleReverse}
           className={classNames('button is-warning', {
             'is-light': !order.isReversed,
           })}
@@ -136,14 +145,7 @@ export const App: React.FC = () => {
 
         {order.reset && (
           <button
-            onClick={() => {
-              setOrder(prev => ({
-                ...prev,
-                sortType: SortType.NONE,
-                isReversed: false,
-                reset: false,
-              }));
-            }}
+            onClick={handleReset}
             type="button"
             className="button is-danger is-light"
             hidden
