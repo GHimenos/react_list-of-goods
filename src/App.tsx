@@ -118,7 +118,7 @@ export const App: React.FC = () => {
             setOrder(prev => ({
               ...prev,
               isReversed: !prev.isReversed,
-              reset: true,
+              reset: !(prev.isReversed && prev.sortType === SortType.NONE),
             }))
           }
           className={classNames('button is-warning', {
